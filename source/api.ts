@@ -1,4 +1,4 @@
-export const defaults = {
+export const defaults: ApiSettings = {
 	filesPreview: true,
 	hideRegExp: `
 		^\\.
@@ -20,18 +20,20 @@ export const defaults = {
 		^stylelint-config\\.json$
 		^humans\\.txt$
 		^readme\\.md$
-	`.replace(/\n\t+/g, '\n').trim()
+	`
+		.replace(/\n\t+/g, "\n")
+		.trim(),
 };
 
-export const storage = {
-	async get(): Promise<typeof defaults> {
-		return new Promise(resolve => {
-			chrome.storage.sync.get(defaults, options => {
-				resolve(options as typeof defaults);
+export const storage: ApiStorage = {
+	async get(): Promise<ApiSettings> {
+		return new Promise((resolve) => {
+			chrome.storage.sync.get(defaults, (options) => {
+				resolve(options as ApiSettings);
 			});
 		});
 	},
-	set(object: typeof defaults) {
+	set(object: ApiSettings): void {
 		chrome.storage.sync.set(object);
-	}
+	},
 };
