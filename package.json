@@ -1,9 +1,11 @@
 {
+	"name": "@ayan4m1/hide-files-on-github",
 	"private": true,
 	"scripts": {
 		"test": "npm run build && xo",
 		"build": "webpack --mode=production",
-		"watch": "webpack --mode=development --watch"
+		"watch": "webpack --mode=development --watch",
+		"bundle": "cd distribution && bestzip ../hide-files-on-github.zip *"
 	},
 	"dependencies": {
 		"dom-chef": "^5.0.0-1",
@@ -20,6 +22,7 @@
 		"@types/copy-webpack-plugin": "^8.0.0",
 		"@types/react": "^17.0.13",
 		"@types/terser-webpack-plugin": "^5.0.4",
+		"bestzip": "^2.2.0",
 		"copy-webpack-plugin": "^9.0.1",
 		"daily-version": "^2.0.0",
 		"eslint-config-xo-react": "^0.25.0",
