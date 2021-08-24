@@ -56,7 +56,6 @@ module.exports = (_environment: string, argv: Record<string, boolean | number | 
 				}
 			]
 		}),
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		new SizePlugin({
 			writeFile: false
 		})
