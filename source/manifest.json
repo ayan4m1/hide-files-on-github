@@ -13,8 +13,9 @@
 	},
 	"permissions": [
 		"https://github.com/*/*",
-		"storage",
-		"activeTab"
+		"activeTab",
+		"contextMenus",
+		"storage"
 	],
 	"optional_permissions": [
 		"http://*/*",
