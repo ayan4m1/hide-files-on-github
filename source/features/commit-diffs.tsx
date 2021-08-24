@@ -22,8 +22,8 @@ const parseStats = (elem: HTMLElement): FileStats | null => {
 	}
 
 	const [added, removed] = [
-		select(".color-text-success", statElem),
-		select(".color-text-danger", statElem),
+		select(".text-green", statElem), // GH is .color-text-success
+		select(".text-red", statElem), // GH is .color-text-danger
 	];
 
 	if (!added || !removed) {
@@ -104,8 +104,8 @@ export default class CommitDiffsFeature implements Feature {
 
 		const statElem = select("#diffstat");
 		const [addElem, removeElem, tooltip] = [
-			select(".color-text-success", statElem),
-			select(".color-text-danger", statElem),
+			select(".text-green", statElem),
+			select(".text-red", statElem),
 			select(".tooltipped", statElem),
 		];
 
