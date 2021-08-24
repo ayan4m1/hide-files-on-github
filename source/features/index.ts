@@ -4,8 +4,8 @@ import FileBrowserFeature from "./file-browser";
 
 export default (settings: ApiSettings): Array<Feature> => {
 	const mergedSettings = {
-		...settings,
 		...defaults,
+		...settings,
 	};
 
 	return Array.from(
