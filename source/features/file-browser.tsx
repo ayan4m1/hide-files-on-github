@@ -6,7 +6,6 @@ export default class FileBrowserFeature implements Feature {
 	hideRegExp: RegExp;
 
 	constructor(settings: ApiSettings) {
-		console.log("Initializing File Browser...");
 		this.willPreviewFiles = settings.filesPreview;
 		this.hideRegExp = new RegExp(settings.hideRegExp.replace(/\n+/g, "|"), "i");
 		this.update = this.update.bind(this);

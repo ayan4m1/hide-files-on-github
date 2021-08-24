@@ -44,7 +44,6 @@ export default class CommitDiffsFeature implements Feature {
 	hideRegExp: RegExp;
 
 	constructor(settings: ApiSettings) {
-		console.log("Initializing Commit Diffs...");
 		this.hideRegExp = new RegExp(settings.hideRegExp.replace(/\n+/g, "|"), "i");
 		this.update = this.update.bind(this);
 	}
@@ -109,7 +108,7 @@ export default class CommitDiffsFeature implements Feature {
 			select(".color-text-danger", statElem),
 			select(".tooltipped", statElem),
 		];
-		
+
 		if (!addElem || !removeElem || !tooltip) {
 			return;
 		}
