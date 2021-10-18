@@ -1,4 +1,5 @@
 export const defaults: ApiSettings = {
+	enterprise: false,
 	filesPreview: true,
 	hideRegExp: `
 		^\\.
