@@ -13,43 +13,30 @@ type LineCountStats = {
 
 const parseLineCount = (elem: HTMLElement): number =>
 	parseInt(elem.innerText.trim().replace(/[+−,]/g, ""), 10);
-const parseStats = (elem: HTMLElement): FileStats | null => {
-	const fileName = select(".description", elem)?.innerText?.trim?.();
-	const statElem = select("div.select-menu-item-text > .diffstat", elem);
-
-	if (!fileName || !statElem) {
-		return null;
-	}
-
-	const [added, removed] = [
-		select(".text-green", statElem), // GH is .color-text-success
-		select(".text-red", statElem), // GH is .color-text-danger
-	];
-
-	if (!added || !removed) {
-		return null;
-	}
-
-	const result: FileStats = {
-		fileName,
-		added: parseLineCount(added),
-		removed: parseLineCount(removed),
-	};
-
-	return result;
-};
 const truthy = (item: any) => Boolean(item);
 
 export default class CommitDiffsFeature implements Feature {
+	enterprise: boolean;
 	hideRegExp: RegExp;
 
 	constructor(settings: ApiSettings) {
+		this.enterprise = settings.enterprise;
 		this.hideRegExp = new RegExp(settings.hideRegExp.replace(/\n+/g, "|"), "i");
 		this.update = this.update.bind(this);
+		this.change = this.change.bind(this);
+		this.parseStats = this.parseStats.bind(this);
 	}
 
 	get selector() {
 		return "details.toc-select.diffbar-item > details-menu include-fragment";
+	}
+
+	get addedSelector() {
+		return this.enterprise ? ".text-green" : ".color-fg-success";
+	}
+
+	get removedSelector() {
+		return this.enterprise ? ".text-red" : ".color-fg-danger";
 	}
 
 	update(): void {
@@ -63,6 +50,36 @@ export default class CommitDiffsFeature implements Feature {
 		// trigger mouseover on the <details> element, which will trigger server fetch for dropdown results
 		detailsElem.dispatchEvent(new MouseEvent("mouseover"));
 
+		setTimeout(this.change, 250);
+	}
+
+	private parseStats = (elem: HTMLElement): FileStats | null => {
+		const fileName = select(".description", elem)?.innerText?.trim?.();
+		const statElem = select("div.select-menu-item-text > .diffstat", elem);
+
+		if (!fileName || !statElem) {
+			return null;
+		}
+
+		const [added, removed] = [
+			select(this.addedSelector, statElem),
+			select(this.removedSelector, statElem),
+		];
+
+		if (!added || !removed) {
+			return null;
+		}
+
+		const result: FileStats = {
+			fileName,
+			added: parseLineCount(added),
+			removed: parseLineCount(removed),
+		};
+
+		return result;
+	};
+
+	private change(): void {
 		// get the root of the dropdown menu
 		const menu = select("details.toc-select.diffbar-item > details-menu");
 
@@ -85,27 +102,24 @@ export default class CommitDiffsFeature implements Feature {
 			totalRemoved: 0,
 		};
 		const { totalAdded, totalRemoved } = items
-			.map(parseStats)
-			.filter((stats: FileStats | null): boolean => {
-				return Boolean(stats) && this.hideRegExp.test(stats!.fileName);
-			})
+			.map(this.parseStats)
+			.filter(
+				(stats: FileStats | null): boolean =>
+					Boolean(stats) && this.hideRegExp.test(stats!.fileName)
+			)
 			.filter(truthy)
 			.reduce<LineCountStats>(
-				(result: LineCountStats, stats: FileStats | null) => {
-					const newResult: LineCountStats = {
-						totalAdded: result.totalAdded + (stats?.added ?? 0),
-						totalRemoved: result.totalRemoved + (stats?.removed ?? 0),
-					};
-
-					return newResult;
-				},
+				(result: LineCountStats, stats: FileStats | null) => ({
+					totalAdded: result.totalAdded + (stats?.added ?? 0),
+					totalRemoved: result.totalRemoved + (stats?.removed ?? 0),
+				}),
 				initialState
 			);
 
 		const statElem = select("#diffstat");
 		const [addElem, removeElem, tooltip] = [
-			select(".text-green", statElem),
-			select(".text-red", statElem),
+			select(this.addedSelector, statElem),
+			select(this.removedSelector, statElem),
 			select(".tooltipped", statElem),
 		];
 
@@ -114,6 +128,7 @@ export default class CommitDiffsFeature implements Feature {
 		}
 
 		const newAdded = parseLineCount(addElem) - totalAdded;
+		console.dir(newAdded);
 
 		addElem.innerText = ` +${newAdded.toLocaleString()} `;
 		const newRemoved = parseLineCount(removeElem) - totalRemoved;
